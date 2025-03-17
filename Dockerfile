@@ -7,8 +7,8 @@ WORKDIR /app
 # Copy the application file.
 COPY app.py /app
 
-# Install Flask.
-RUN pip install Flask
+# Install Flask and requests.
+RUN pip install Flask requests
 
 # Expose the port (Render will supply this as an env variable).
 EXPOSE 8080
