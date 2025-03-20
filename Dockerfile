@@ -7,8 +7,10 @@ WORKDIR /app
 # Copy the application file.
 COPY app.py /app
 
-# Install Flask and requests.
-RUN pip install Flask requests
+# Install Flask, requests and airtable
+RUN pip install Flask requests airtable
+
+
 
 # Expose the port (Render will supply this as an env variable).
 EXPOSE 8080
