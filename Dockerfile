@@ -1,19 +1,29 @@
-# Use a lightweight Python image.
-FROM python:3.9-slim
-
-# Set the working directory.
+# Use an official Node.js image as the build stage
+FROM node:18-alpine AS builder
 WORKDIR /app
 
-# Copy the application file.
-COPY app.py /app
+# Copy package files and install dependencies
+COPY package.json package-lock.json ./
+RUN npm install
 
-# Install Flask, requests and airtable
-RUN pip install Flask requests airtable
+# Copy the rest of the application code
+COPY . .
 
+# Build the Next.js application
+RUN npm run build
 
+# Production stage
+FROM node:18-alpine AS runner
+WORKDIR /app
+ENV NODE_ENV=production
 
-# Expose the port (Render will supply this as an env variable).
-EXPOSE 8080
+# Copy only the necessary files from the build stage
+COPY --from=builder /app/package.json ./
+COPY --from=builder /app/.next ./.next
+COPY --from=builder /app/public ./public
 
-# Define the command to run the application.
-CMD ["python", "app.py"]
+# Expose the port your app runs on (default Next.js port)
+EXPOSE 3000
+
+# Start the app
+CMD ["npm", "start"]
